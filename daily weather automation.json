@@ -1,0 +1,149 @@
+{
+  "name": "daily weather automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5350df54-6224-472b-a402-e882749d6fe7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "Awka,NG"
+            },
+            {
+              "name": "appid",
+              "value": "f5613685cf2abdbd67f6a17e0e0de4b4"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "546425fc-cc5f-425e-a5ee-6079351845da",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1821133e-bf0f-4ff1-a8ef-b023b34decc2",
+              "name": "weather_report",
+              "value": "=🌤️ Daily Weather Report  Location: Awka, Nigeria Temperature: {{$json.main.temp}}°C Condition: {{$json.weather[0].description}} Humidity: {{$json.main.humidity}}% Wind Speed: {{$json.wind.speed}} m/s",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "be27acf1-9136-4580-84d4-45dd3fa5fc43",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "8384810952",
+        "text": "={{ $json.weather_report }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "5cb41740-97d2-49b8-9248-8661595dc515",
+      "name": "Send a text message",
+      "webhookId": "92e9235a-aafb-48e3-b79f-20181e6edc58",
+      "credentials": {
+        "telegramApi": {
+          "id": "zuYrzZMaj8mJ0lXY",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4a3b2272-807d-40a5-a279-46fc800b3184",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2da25be2f94722e122e2147848d6382f29951679d0c6fed71e417ec18cbbbdac"
+  },
+  "nodeGroups": [],
+  "id": "kKrGbYnx846SuIt4",
+  "tags": []
+}
